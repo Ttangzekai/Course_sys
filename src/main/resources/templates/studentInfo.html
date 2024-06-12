@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>学生信息</title>
+</head>
+<body>
+<h1>学生信息</h1>
+<p>学生姓名: <span th:text="${studentInfo.name}"></span></p>
+<p>学生学号: <span th:text="${studentInfo.stuId}"></span></p>
+<p>学生性别: <span th:text="${studentInfo.sex}"></span></p>
+<p>学生邮箱: <span th:text="${studentInfo.email}"></span></p>
+<p>学生身份证: <span th:text="${studentInfo.id}"></span></p>
+<h2>学生简历</h2>
+<!--<p th:text="${studentResume.resumeContent}"></p>-->
+</body>
+</html>
