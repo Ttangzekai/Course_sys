@@ -3,7 +3,10 @@ package cn.hzcu.timeback.controller;
 
 
 import cn.hzcu.timeback.entity.Course;
+import cn.hzcu.timeback.entity.CourseRegistration;
+import cn.hzcu.timeback.entity.Post;
 import cn.hzcu.timeback.entity.R;
+import cn.hzcu.timeback.service.ICourseRegService;
 import cn.hzcu.timeback.service.ICourseService;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -15,6 +18,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -31,6 +35,8 @@ import java.util.List;
 public class CourseController {
     @Autowired
     private ICourseService CourseService;
+    @Autowired
+    private ICourseRegService courseRegService;
     @GetMapping("/list")
     @ApiOperation(value = "list")
     public R<IPage> list(@RequestParam(defaultValue = "1") Integer current,@RequestParam(defaultValue = "10") int size){
@@ -86,6 +92,41 @@ public class CourseController {
     public R<String> save(@RequestParam Integer id){
         CourseService.removeById(id);
         return R.success();
+    }
+
+    @GetMapping("/userid")
+    @ApiOperation(value = "getByUserId")
+    public R<IPage<Course>> getByUserId(@RequestParam Integer userId) {
+        LambdaQueryWrapper<CourseRegistration> registrationQuery = new LambdaQueryWrapper<>();
+        registrationQuery.eq(CourseRegistration::getStuid, userId);
+        List<CourseRegistration> registrations = courseRegService.list(registrationQuery);
+
+        List<Integer> courseIds = registrations.stream()
+                .map(CourseRegistration::getCourseid)
+                .collect(Collectors.toList());
+
+        if (courseIds.isEmpty()) {
+            // 如果没有找到任何课程，返回一个空的分页结果
+            Page<Course> emptyPage = new Page<>(1, 10);
+            return R.success(emptyPage);
+        }
+        LambdaQueryWrapper<Course> courseQuery = new LambdaQueryWrapper<>();
+        courseQuery.in(Course::getId, courseIds);
+
+        Page<Course> page = new Page<>(1, 10); // 默认查询第一页，每页10条记录
+        IPage<Course> coursePage = CourseService.page(page, courseQuery);
+        return R.success(coursePage);
+    }
+
+    @GetMapping("/teacherid")
+    @ApiOperation(value = "getByTeacherId")
+    public R<IPage<Course>> getByTeacherId(@RequestParam Integer userId) {
+        LambdaQueryWrapper<Course> courseQuery = new LambdaQueryWrapper<>();
+        courseQuery.in(Course::getTeacher, userId);
+
+        Page<Course> page = new Page<>(1, 10); // 默认查询第一页，每页10条记录
+        IPage<Course> coursePage = CourseService.page(page, courseQuery);
+        return R.success(coursePage);
     }
 
 }

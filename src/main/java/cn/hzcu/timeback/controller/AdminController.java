@@ -47,34 +47,25 @@ public class AdminController {
 //    @PostMapping("/login")
     @RequestMapping("/login")
     @ApiOperation(value = "login")
-//    public R<Admin> login(@RequestBody Admin admin){
-//    public String login(HttpServletRequest request, Map<String, Object> map) throws Exception{
-//        String password = admin.getPassword();
-//        //从数据库中查找用户
-//        LambdaQueryWrapper<Admin> queryWrapper = new LambdaQueryWrapper<>();
-//        queryWrapper.eq(Admin::getName,admin.getName());
-//        Admin man = AdminService.getOne(queryWrapper);
-//        //如果没有找到
-//        if(man == null){
-//            return R.error("登录失败");
-//        }
-//        //找到后匹配密码
-//        if(!man.getPassword().equals(password)){
-//            return R.error("密码错误");
-//        }
-//        return  R.success(man);
-        public void doLogin(@RequestBody Admin admin) {
+        public R<Admin> doLogin(@RequestBody Admin admin) {
         System.out.println(admin.getName());
         System.out.println(admin.getPassword());
             Subject subject = SecurityUtils.getSubject();
             AuthenticationToken token1=new UsernamePasswordToken(admin.getName(),admin.getPassword());
+            LambdaQueryWrapper<Admin> queryWrapper = new LambdaQueryWrapper<>();
+            queryWrapper.eq(Admin::getName,admin.getName());
+            Admin man = AdminService.getOne(queryWrapper);
             try {
                 subject.login(new UsernamePasswordToken(admin.getName(), admin.getPassword()));
                 System.out.println("登录成功!");
+
+
             } catch (AuthenticationException e) {
                 e.printStackTrace();
                 System.out.println("登录失败!");
+                return R.error("登录失败");
             }
+        return R.success(man);
         }
 
     @GetMapping("/hello")

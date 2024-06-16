@@ -11,9 +11,25 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.List;
 
 /**
@@ -81,6 +97,60 @@ public class ResourceController {
         ResourceService.save(resourse);
         return R.success();
     }
+
+    @Value("${file.upload-dir}")
+    private String uploadDir;
+
+    @PostMapping("/upload")
+    public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile file,
+                                             @RequestParam("course_id") Integer courseId,
+                                             @RequestParam("uploader_id") Integer uploaderId,
+                                             @RequestParam("resource_name") String resourceName) {
+        String fileName = StringUtils.cleanPath(file.getOriginalFilename());
+        Resource resource = new Resource();
+
+
+        try {
+            Path uploadPath = Paths.get(uploadDir, courseId.toString());
+            if (!Files.exists(uploadPath)) {
+                Files.createDirectories(uploadPath);
+            }
+            Path filePath = uploadPath.resolve(fileName);
+            System.out.println("Uploading to: " + filePath.toAbsolutePath().toString());
+
+            resource.setUploader(uploaderId);
+            resource.setCourseid(courseId);
+            resource.setName(resourceName);
+            resource.setUrl(filePath.toAbsolutePath().toString());
+
+            Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+            ResourceService.save(resource);
+            return new ResponseEntity<>("File uploaded successfully: " + fileName, HttpStatus.OK);
+        } catch (IOException e) {
+            return new ResponseEntity<>("Could not upload the file: " + fileName, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping("/download/{courseId}/{fileName}")
+    public ResponseEntity<InputStreamResource> downloadFile(@PathVariable("courseId") String courseId,
+                                                            @PathVariable("fileName") String fileName) {
+        String filePath = uploadDir+ "/" + courseId + "/" + fileName;
+        File file = new File(filePath);
+        try {
+            InputStream inputStream = new FileInputStream(file);
+            InputStreamResource resource = new InputStreamResource(inputStream);
+
+            return ResponseEntity.ok()
+                    .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                    .contentLength(file.length())
+                    .body(resource);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+
+    }
+
     @DeleteMapping()
     @ApiOperation(value = "delete")
     public R<String> save(@RequestParam Integer id){

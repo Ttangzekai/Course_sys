@@ -23,7 +23,11 @@ public class ShiroConfig {
         Map<String, String> filterChainDefinitionMap = new LinkedHashMap<String, String>();
         // 配置不需要权限的资源
 //        filterChainDefinitionMap.put("/static/**", "anon");
-//        filterChainDefinitionMap.put("/index", "anon");
+        filterChainDefinitionMap.put("/user/login", "anon");
+        filterChainDefinitionMap.put("/course/**", "anon");
+        filterChainDefinitionMap.put("/coursereg", "anon");
+        filterChainDefinitionMap.put("/resource/**", "anon");
+        filterChainDefinitionMap.put("/resource", "anon");
 //        //配置退出过滤器,退出代码Shiro已经替我们实现
 //        filterChainDefinitionMap.put("/logout", "logout");
 //        //过滤链定义，从上向下顺序执行，/**放在最下边;
