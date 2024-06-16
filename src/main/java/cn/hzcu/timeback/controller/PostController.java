@@ -27,7 +27,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/post")
 @Api
-@CrossOrigin
+@CrossOrigin(origins = "http://localhost:8080", allowCredentials = "true")
 public class PostController {
     @Autowired
     private IPostService postService;

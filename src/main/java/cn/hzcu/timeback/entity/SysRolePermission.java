@@ -8,6 +8,7 @@ import lombok.experimental.Accessors;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import javax.validation.groups.Default;
 import java.io.Serializable;
 import java.util.List;
 
@@ -18,11 +19,16 @@ import java.util.List;
 public class SysRolePermission implements Serializable {
     @NotNull
     @TableField("permission_id")
-    private Integer permission_id;
+    private Integer permissionid;
     /**
      * 权限名称.
      */
     @NotNull
     @TableField("role_id")
-    private Integer role_id;
+    private Integer roleid;
+
+    public interface Add extends Default {
+    }
+    public interface Update extends Default {
+    }
 }

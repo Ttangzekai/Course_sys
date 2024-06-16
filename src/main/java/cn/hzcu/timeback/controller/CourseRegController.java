@@ -30,7 +30,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/coursereg")
 @Api
-@CrossOrigin
+@CrossOrigin(origins = "http://localhost:8080", allowCredentials = "true")
 public class CourseRegController {
     @Autowired
     private ICourseRegService ICourseRegService;

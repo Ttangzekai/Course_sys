@@ -35,7 +35,7 @@ public class SysRolePermissionServiceImpl extends ServiceImpl<SysRolePermissionM
         List<SysRolePermission> rolePermissions = sysRolePermissionMapper.selectList(queryWrapper);
         List<Integer> permissionIds = new ArrayList<>();
         for (SysRolePermission rolePermission : rolePermissions) {
-            permissionIds.add(rolePermission.getPermission_id());
+            permissionIds.add(rolePermission.getPermissionid());
         }
         return permissionIds;
     }

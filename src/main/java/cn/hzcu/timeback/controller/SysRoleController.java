@@ -1,10 +1,10 @@
 package cn.hzcu.timeback.controller;
 
 
-import cn.hzcu.timeback.entity.Admin;
-import cn.hzcu.timeback.entity.Category;
+
+import cn.hzcu.timeback.entity.SysRole;
 import cn.hzcu.timeback.entity.R;
-import cn.hzcu.timeback.service.ICategoryService;
+import cn.hzcu.timeback.service.ISysRoleService;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -25,66 +25,66 @@ import java.util.List;
  * @since 2024-03-22
  */
 @RestController
-@RequestMapping("/category")
+@RequestMapping("/sysrole")
 @Api
 @CrossOrigin(origins = "http://localhost:8080", allowCredentials = "true")
-public class CategoryController {
+public class SysRoleController {
     @Autowired
-    private ICategoryService CategoryService;
+    private ISysRoleService ISysRoleService;
     @GetMapping("/list")
     @ApiOperation(value = "list")
     public R<IPage> list(@RequestParam(defaultValue = "1") Integer current,@RequestParam(defaultValue = "10") int size){
         Page page = new Page(current,size);
-        IPage catePage = CategoryService.page(page);
-        return R.success(catePage);
+        IPage sysrolePage = ISysRoleService.page(page);
+        return R.success(sysrolePage);
     }
 
     @GetMapping()
     @ApiOperation(value = "getById")
-    public R<Category> updateManager(@RequestParam Integer id){
-        return R.success(CategoryService.getById(id));
+    public R<SysRole> updateManager(@RequestParam Integer id){
+        return R.success(ISysRoleService.getById(id));
     }
 
-    @GetMapping("/categoryid")
-    @ApiOperation(value = "getByCateId")
-    public R<IPage<Category>> getByCateId(@RequestParam Integer cateId) {
-        LambdaQueryWrapper<Category> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(Category::getId, cateId);
+    @GetMapping("/sysroleid")
+    @ApiOperation(value = "getBysysroleId")
+    public R<IPage<SysRole>> getBysysroleId(@RequestParam Integer sysroleId) {
+        LambdaQueryWrapper<SysRole> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(SysRole::getId, sysroleId);
 
-        Page<Category> page = new Page<>(1, 10); // 默认查询第一页，每页10条记录
-        IPage<Category> catePage = CategoryService.page(page, queryWrapper);
-        return R.success(catePage);
+        Page<SysRole> page = new Page<>(1, 10); // 默认查询第一页，每页10条记录
+        IPage<SysRole> sysrolePage = ISysRoleService.page(page, queryWrapper);
+        return R.success(sysrolePage);
     }
 
     @GetMapping("/search")
     @ApiOperation(value = "search")
     public R<IPage> searchByContent(String keyword,@RequestParam(defaultValue = "1") Integer current,@RequestParam(defaultValue = "10") int size) {
-        LambdaQueryWrapper<Category> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.like(Category::getCategoryname, keyword);
+        LambdaQueryWrapper<SysRole> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.like(SysRole::getRole, keyword);
 
-        List<Category> searchResult = CategoryService.list(queryWrapper);
+        List<SysRole> searchResult = ISysRoleService.list(queryWrapper);
         Page page = new Page(current,size);
-        IPage catePage = CategoryService.page(page,queryWrapper);
-        return R.success(catePage);
+        IPage sysrolePage = ISysRoleService.page(page,queryWrapper);
+        return R.success(sysrolePage);
     }
 
 
     @PutMapping()
     @ApiOperation(value = "update")
-    public R<String> updateManager(@RequestBody @Validated(Category.Update.class) Category category){
-        CategoryService.updateById(category);
+    public R<String> updateManager(@RequestBody @Validated(SysRole.Update.class) SysRole SysRole){
+        ISysRoleService.updateById(SysRole);
         return R.success();
     }
     @PostMapping()
     @ApiOperation(value = "save")
-    public R<String> save(@RequestBody @Validated(Category.Add.class) Category cate){
-        CategoryService.save(cate);
+    public R<String> save(@RequestBody @Validated(SysRole.Add.class) SysRole SysRole){
+        ISysRoleService.save(SysRole);
         return R.success();
     }
     @DeleteMapping()
     @ApiOperation(value = "delete")
     public R<String> save(@RequestParam Integer id){
-        CategoryService.removeById(id);
+        ISysRoleService.removeById(id);
         return R.success();
     }
 

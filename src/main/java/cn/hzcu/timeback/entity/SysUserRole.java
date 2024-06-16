@@ -13,6 +13,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.validation.constraints.NotNull;
+import javax.validation.groups.Default;
 import java.util.List;
 
 @Data
@@ -30,7 +31,10 @@ public class SysUserRole {
 
     @NotNull
     @TableField("role_id")
-    private String role_id;
+    private Integer roleid;
 
-
+    public interface Add extends Default {
+    }
+    public interface Update extends Default {
+    }
 }

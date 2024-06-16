@@ -8,6 +8,8 @@ import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.handler.SimpleMappingExceptionResolver;
+
+import javax.servlet.Filter;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -17,10 +19,13 @@ public class ShiroConfig {
     @Bean
     public ShiroFilterFactoryBean shirFilter(SecurityManager securityManager) {
         //shirFilter
+
         ShiroFilterFactoryBean shiroFilterFactoryBean = new ShiroFilterFactoryBean();
         shiroFilterFactoryBean.setSecurityManager(securityManager);
         //拦截器.
         Map<String, String> filterChainDefinitionMap = new LinkedHashMap<String, String>();
+
+
         // 配置不需要权限的资源
 //        filterChainDefinitionMap.put("/static/**", "anon");
         filterChainDefinitionMap.put("/user/login", "anon");
@@ -28,6 +33,7 @@ public class ShiroConfig {
         filterChainDefinitionMap.put("/coursereg", "anon");
         filterChainDefinitionMap.put("/resource/**", "anon");
         filterChainDefinitionMap.put("/resource", "anon");
+        filterChainDefinitionMap.put("/user", "anon");
 //        //配置退出过滤器,退出代码Shiro已经替我们实现
 //        filterChainDefinitionMap.put("/logout", "logout");
 //        //过滤链定义，从上向下顺序执行，/**放在最下边;
@@ -41,7 +47,14 @@ public class ShiroConfig {
         filterChainDefinitionMap.put("/**","authc");
 //        //未授权界面;
 //        shiroFilterFactoryBean.setUnauthorizedUrl("/403");
+
         shiroFilterFactoryBean.setFilterChainDefinitionMap(filterChainDefinitionMap);
+        Map<String, Filter> filters = shiroFilterFactoryBean.getFilters();
+        //设置自定义filter
+        filters.put("authc",new ShiroFormAuthenticationFilter());
+        shiroFilterFactoryBean.setFilters(filters);
+
+
         return shiroFilterFactoryBean;
     }
 

@@ -41,7 +41,7 @@ public class ShiroRealm extends AuthorizingRealm {
         List<SysUserRole> roleList = sysUserRoleService.getByUid(adminInfo.getId());
 
         for (SysUserRole userRole : roleList) {
-            SysRole role = sysRoleService.getById(userRole.getRole_id());
+            SysRole role = sysRoleService.getById(userRole.getRoleid());
             info.addRole(role.getRole());
             List<Integer> permissionIds = sysRolePermissionService.findPermissionIdsByRoleId(role.getId());
             for (Integer permissionId : permissionIds) {

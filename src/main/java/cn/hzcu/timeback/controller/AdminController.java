@@ -40,7 +40,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/admin")
 @Api
-@CrossOrigin
+@CrossOrigin(origins = "http://localhost:8080", allowCredentials = "true")
 public class AdminController {
     @Autowired
     private IAdminService AdminService;
